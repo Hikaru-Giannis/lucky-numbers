@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
+import { Board } from "@/components/organisms/Board/Board";
 import { useState } from "react";
 
 type Card = {
@@ -42,6 +43,64 @@ export default function Initial() {
       boardCards: BoardCard[];
     }[]
   >([]);
+
+  // 引数のユーザーと番号のカードをユーザーのボードに配置
+  const setCard = (user: string, cards: Card[]) => {
+    // cardをnumberでソート
+    const sortedCards = cards.sort((a, b) => a.number - b.number);
+
+    const newBoardCards = boardCards.find(
+      (boardCard) => boardCard.user === user
+    );
+    if (!newBoardCards) {
+      return;
+    }
+
+    newBoardCards.boardCards = newBoardCards.boardCards.map((boardCards) => {
+      if (boardCards.coordinate.x === 0 && boardCards.coordinate.y === 0) {
+        return {
+          coordinate: boardCards.coordinate,
+          card: sortedCards[0],
+        };
+      } else if (
+        boardCards.coordinate.x === 1 &&
+        boardCards.coordinate.y === 1
+      ) {
+        return {
+          coordinate: boardCards.coordinate,
+          card: sortedCards[1],
+        };
+      } else if (
+        boardCards.coordinate.x === 2 &&
+        boardCards.coordinate.y === 2
+      ) {
+        return {
+          coordinate: boardCards.coordinate,
+          card: sortedCards[2],
+        };
+      } else if (
+        boardCards.coordinate.x === 3 &&
+        boardCards.coordinate.y === 3
+      ) {
+        return {
+          coordinate: boardCards.coordinate,
+          card: sortedCards[3],
+        };
+      }
+
+      return boardCards;
+    });
+
+    setBoardCards(
+      boardCards.map((boardCard) =>
+        boardCard.user === user ? newBoardCards : boardCard
+      )
+    );
+  };
+
+  {
+    console.log(boardCards);
+  }
 
   return (
     <main className="container flex flex-col justify-center items-center p-5 gap-3">
@@ -95,7 +154,6 @@ export default function Initial() {
             onClick={() => {
               setParticipants([...participants, participantName]);
               setParticipantName("");
-
               // 1~20の範囲で初期カード枚数を設定
               const newCards = Array.from({ length: baseCardCount }).map(
                 (_, index) => {
@@ -147,41 +205,43 @@ export default function Initial() {
                 ゲームスタート
               </Button>
             </div>
-            {/* ボードをグリッドで表示 */}
-            <div className="flex items-center">
-              {boardCards.map((boardCard, index) => (
-                <div key={index}>
-                  <h2>{boardCard.user}</h2>
-                  <div className="grid grid-cols-4 gap-2">
-                    {boardCard.boardCards.map((boardCard, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-center items-center border w-10 h-10"
-                      >
-                        {boardCard.card ? <>{boardCard.card.number}</> : <></>}
-                      </div>
-                    ))}
+            {boardCards.length > 0 && (
+              <>
+                <div>
+                  <div className="flex flex-col items-center">
+                    <h2>カード</h2>
+                    {
+                      <Board
+                        cards={cards}
+                        user={participants[0]}
+                        updateBoardCards={setCard}
+                      />
+                    }
                   </div>
                 </div>
-              ))}
-            </div>
-            <div>
-              <div className="flex flex-col items-center">
-                <h2>カード</h2>
-                {
-                  <div className="grid grid-cols-5 gap-2">
-                    {cards.map((card, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-center items-center border w-10 h-10"
-                      >
-                        {card.number}
+                <div className="flex items-center">
+                  {boardCards.map((boardCard, index) => (
+                    <div key={index}>
+                      <h2>{boardCard.user}</h2>
+                      <div className="grid grid-cols-4 gap-2">
+                        {boardCard.boardCards.map((boardCard, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-center items-center border w-10 h-10"
+                          >
+                            {boardCard.card ? (
+                              <>{boardCard.card.number}</>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                }
-              </div>
-            </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
     </main>

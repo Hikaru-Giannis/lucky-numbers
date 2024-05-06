@@ -115,65 +115,75 @@ export default function Initial() {
         </div>
       )}
 
-      {participants.length == numberOfParticipants && (
-        <>
-          <div>
-            <Button
-              onClick={() => {
-                // (0,0)から(3,3)までの座標を初期値としてボードを作成
-                const newBoardCards = participants.map((participant) => {
-                  const newCards = Array.from({ length: 16 }).map(
-                    (_, index) => {
-                      return {
-                        coordinate: {
-                          x: index % 4,
-                          y: Math.floor(index / 4),
-                        },
-                        card: null,
-                      };
-                    }
-                  );
-                  return {
-                    user: participant,
-                    holadCards: [],
-                    boardCards: newCards,
-                  };
-                });
-                setBoardCards(newBoardCards);
-              }}
-            >
-              カードを配る
-            </Button>
-          </div>
-          {/* ボードをグリッドで表示 */}
-          <div className="flex items-center">
-            {boardCards.map((boardCard, index) => (
-              <div key={index}>
-                <h2>{boardCard.user}</h2>
-                <div className="grid grid-cols-4 gap-2">
-                  {boardCard.boardCards.map((boardCard, index) => (
-                    <div key={index} className="border w-10 h-10">
-                      {boardCard.card ? <>{boardCard.card.number}</> : <></>}
-                    </div>
-                  ))}
+      {isParticipantsConfirmed &&
+        participants.length == numberOfParticipants && (
+          <>
+            <div>
+              <Button
+                onClick={() => {
+                  // (0,0)から(3,3)までの座標を初期値としてボードを作成
+                  const newBoardCards = participants.map((participant) => {
+                    const newCards = Array.from({ length: 16 }).map(
+                      (_, index) => {
+                        return {
+                          coordinate: {
+                            x: index % 4,
+                            y: Math.floor(index / 4),
+                          },
+
+                          card: null,
+                        };
+                      }
+                    );
+                    return {
+                      user: participant,
+                      holadCards: [],
+                      boardCards: newCards,
+                    };
+                  });
+                  setBoardCards(newBoardCards);
+                }}
+              >
+                ゲームスタート
+              </Button>
+            </div>
+            {/* ボードをグリッドで表示 */}
+            <div className="flex items-center">
+              {boardCards.map((boardCard, index) => (
+                <div key={index}>
+                  <h2>{boardCard.user}</h2>
+                  <div className="grid grid-cols-4 gap-2">
+                    {boardCard.boardCards.map((boardCard, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-center items-center border w-10 h-10"
+                      >
+                        {boardCard.card ? <>{boardCard.card.number}</> : <></>}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-      {/* {participants.length == numberOfParticipants && (
-        <div>
-          <div className="flex flex-col items-center">
-            <h2>カード番号</h2>
-            <ul>
-              {cards.map((card, index) => (
-                <li key={index}>{card.number}</li>
               ))}
-            </ul>
-          </div>
-        </div>
-      )} */}
+            </div>
+            <div>
+              <div className="flex flex-col items-center">
+                <h2>カード</h2>
+                {
+                  <div className="grid grid-cols-5 gap-2">
+                    {cards.map((card, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-center items-center border w-10 h-10"
+                      >
+                        {card.number}
+                      </div>
+                    ))}
+                  </div>
+                }
+              </div>
+            </div>
+          </>
+        )}
     </main>
   );
 }
